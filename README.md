@@ -29,7 +29,7 @@ Built the entire web platform from scratch for a national industrial HVAC equipm
 
 ### By the Numbers
 - 400+ commits over 3 months
-- 500+ products across 12 categories and 20+ brands
+- 1000+ products across 12 categories and 20+ brands
 - ~15,000 lines of custom PHP, CSS, and JS
 - 6 page-specific renderers, 30+ ACF field groups, 19 page templates
 
