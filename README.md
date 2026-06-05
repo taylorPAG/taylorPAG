@@ -26,7 +26,21 @@ Built the entire web platform from scratch for a national industrial HVAC equipm
 - **Image pipeline** — 6-stage Python pipeline: collect, convert to WebP, export WP data, match products, rename, bulk upload. Handles 1200x1200 standardization with Pillow.
 - **SEO & security** — JSON-LD schema for products/org/FAQ, email/phone obfuscation system, CSP headers, cookie consent, robots optimization.
 - **Archive system** — unified renderer for brand, category, and shop pages with knowledge tabs, spec range pills, brand logos, faceted filtering, and equipment-first sort.
-
+  
+### DevOps & Deployment Infrastructure
+- **Three-rail deployment pipeline** — code, database content, and media each move on their own controlled rail (Local → Staging → Production) so the live store can never be clobbered by a
+  stray change. Production is push-when-ready by design — never auto-synced.
+- **Idempotent recipe system** — every DB content change is authored as an environment-agnostic PHP "recipe" that resolves objects by business key (SKU/slug/title, never numeric IDs), runs
+  identically on all three environments, and is replayed staging→prod by a single command that snapshots prod first and enforces staging-first ordering. One artifact, three runs — kills the "do it three times" drift        problem while allowing unusually snappy and easy to use connection from local -> staging -> production.
+- **Production guardrails** — a 38-rule deny-list wraps all production WP-CLI access, hard-blocking destructive operations (eval, db drop/import, config writes, payment-option changes,
+  content deletion). The live store is treated as sacred.
+- **Harness-enforced safety hooks** — PreToolUse hooks intercept AI-driven commands *before* they run and flag un-journaled DB mutations or per-environment image-ID drift, so the rails hold
+  even under heavy automation.
+- **Custom Airtable → WordPress poller** — replaced n8n with a self-locking PHP poller that hash-detects changed records and syncs used-equipment inventory through WP REST endpoints, writing
+  sync status back to Airtable.
+- **Dynamic pricing engine** — weeks-of-supply × condition pricing tiers for used inventory with floor-price enforcement, cooldowns, and an append-only pricing audit log.
+- **Reproducible machine setup** — the entire toolchain (SSH aliases, deploy scripts, guardrails, hooks) is versioned in a private ops repo with a one-command installer, so the whole pipeline  rebuilds from scratch.
+    
 ### By the Numbers
 - 400+ commits over 3 months
 - 1000+ products across 12 categories and 20+ brands
